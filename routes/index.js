@@ -2,7 +2,6 @@ module.exports = function (app, User) {
    // 회원 정보 post
    app.post("/account/new", (req, res) => {
       const user = new User();
-
       user.id = req.body.id;
       user.email = req.body.email;
       user.nickname = req.body.nickname;
