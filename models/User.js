@@ -9,7 +9,8 @@ const userSchema = new Schema({
    password: { type: String, required: true },
    career: { type: Number, required: true },
    techStack: { type: Array, require: true },
-   profile: { type: String, require: true },
+   profile: { type: String, require: false },
+   accessToken: { type: String, require: false },
 });
 
 module.exports = mongoose.model("User", userSchema);

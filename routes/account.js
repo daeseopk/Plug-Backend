@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const authMiddleware = require("../modules/authMiddleware");
+
+require("dotenv").config();
 
 router.post("/new", (req, res) => {
    const user = new User();
@@ -13,6 +17,7 @@ router.post("/new", (req, res) => {
    user.career = req.body.career;
    user.techStack = req.body.techStack;
    user.profile = null;
+   user.accessToken = null;
 
    user.save((err) => {
       if (err) {
@@ -53,19 +58,55 @@ router.post("/login", (req, res) => {
       if (err) return res.status(500).send({ error: "database failure" });
       users.map((user) => {
          if (user.id === req.body.id && user.password === req.body.password) {
-            const data = {
-               uid: user.uid,
-               id: user.id,
-               email: user.email,
-               nickname: user.nickname,
-               techStack: user.techStack,
-            };
-            res.json(data);
+            jwt.sign(
+               { id: user.id, uid: user.uid },
+               process.env.SECRET_KEY,
+               { expiresIn: "1d" },
+               async (err, token) => {
+                  if (err) {
+                     console.log(err);
+                     res.status(401).json({
+                        success: false,
+                        errormessage: "token sign fail",
+                     });
+                  } else {
+                     res.json({ success: true, accessToken: token });
+                     await User.updateOne(
+                        { uid: user.uid },
+                        { $set: { accessToken: token } }
+                     );
+                  }
+               }
+            );
          } else {
-            res.send(false);
+            res.status(401).json({
+               success: false,
+               errormessage: "token sign fail",
+            });
          }
       });
    });
 });
 
+router.get("/currentUser/:uid", (req, res) => {
+   // var uid = req.body.data;
+   var { uid } = req.params;
+   if (uid !== null) {
+      User.find((err, users) => {
+         if (err) return res.status(500).send({ error: "database failure" });
+         users.map((user) => {
+            if (user.uid === uid) {
+               res.send({
+                  techStack: user.techStack,
+                  id: user.id,
+                  email: user.email,
+                  nickname: user.nickname,
+                  carrer: user.carrer,
+                  profile: user.profile,
+               });
+            } else res.send(null);
+         });
+      });
+   }
+});
 module.exports = router;
