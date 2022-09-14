@@ -88,14 +88,14 @@ router.post("/login", (req, res) => {
    });
 });
 
-router.get("/currentUser/:uid", (req, res) => {
+router.get("/currentUser/:token", (req, res) => {
    // var uid = req.body.data;
-   var { uid } = req.params;
-   if (uid !== null) {
+   var { token } = req.params;
+   if (token !== null) {
       User.find((err, users) => {
          if (err) return res.status(500).send({ error: "database failure" });
          users.map((user) => {
-            if (user.uid === uid) {
+            if (user.accessToken === token) {
                res.send({
                   techStack: user.techStack,
                   id: user.id,
@@ -104,7 +104,11 @@ router.get("/currentUser/:uid", (req, res) => {
                   carrer: user.carrer,
                   profile: user.profile,
                });
-            } else res.send(null);
+            } else {
+               res.status(401).json({
+                  success: false,
+               });
+            }
          });
       });
    }
