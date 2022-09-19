@@ -97,6 +97,7 @@ router.get("/currentUser/:token", (req, res) => {
          users.map((user) => {
             if (user.accessToken === token) {
                res.send({
+                  uid: user.uid,
                   techStack: user.techStack,
                   id: user.id,
                   email: user.email,
@@ -112,5 +113,20 @@ router.get("/currentUser/:token", (req, res) => {
          });
       });
    }
+});
+
+router.post("/changeNickname", (req, res) => {
+   User.find((err, users) => {
+      if (err) return res.status(500).send({ error: "database failure" });
+      users.map(async (user) => {
+         if (user.uid === req.body.uid) {
+            await User.updateOne(
+               { uid: req.body.uid },
+               { $set: { nickname: req.body.nickname } }
+            );
+            res.json({ success: true });
+         }
+      });
+   });
 });
 module.exports = router;
