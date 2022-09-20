@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const PORT = 8000;
 const accountRouter = require("./routes/account");
+const registerRouter = require("./routes/register");
 require("dotenv").config();
 
 mongoose
@@ -22,6 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("uploads"));
 app.use("/account", accountRouter);
+app.use("/register", registerRouter);
 
 const server = require("http").createServer(app);
 
