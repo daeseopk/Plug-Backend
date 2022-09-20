@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("../modules/authMiddleware");
+// const authMiddleware = require("../modules/authMiddleware");
 
 require("dotenv").config();
 
@@ -24,8 +24,7 @@ router.post("/new", (req, res) => {
          console.error(err);
          res.json({ result: 0 });
          return;
-      }
-      res.json({ result: 1 });
+      } else res.json({ result: 1 });
    });
 });
 
@@ -102,7 +101,7 @@ router.get("/currentUser/:token", (req, res) => {
                   id: user.id,
                   email: user.email,
                   nickname: user.nickname,
-                  carrer: user.carrer,
+                  career: user.career,
                   profile: user.profile,
                });
             } else {
