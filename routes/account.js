@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const Post = require("../models/Post");
 const jwt = require("jsonwebtoken");
 // const authMiddleware = require("../modules/authMiddleware");
 
@@ -88,7 +89,6 @@ router.post("/login", (req, res) => {
 });
 
 router.get("/currentUser/:token", (req, res) => {
-   // var uid = req.body.data;
    var { token } = req.params;
    if (token !== null) {
       User.find((err, users) => {
@@ -128,4 +128,42 @@ router.post("/changeNickname", (req, res) => {
       });
    });
 });
+
+router.get("/getInfo/:uid", (req, res) => {
+   var { uid } = req.params;
+   var count = 0;
+   var nickname = "";
+   var postArray = [];
+
+   Post.find((err, posts) => {
+      if (err) return res.status(500).send({ error: "database failure" });
+      posts.map((post) => {
+         if (post.uid === uid) {
+            postArray.push({
+               count: count,
+               isProject: post.isProject,
+               postId: post.postId,
+               title: post.title,
+               desc: post.desc,
+               uploadDate: post.uploadDate,
+            });
+            count += 1;
+         }
+      });
+      User.find((err, users) => {
+         if (err) return res.status(500).send({ error: "database failure" });
+         users.map((user) => {
+            if (user.uid === uid) {
+               nickname = user.nickname;
+            }
+         });
+         res.send({ postArray: postArray, nickname: nickname });
+      });
+   });
+
+   /// 닉네임 찾기
+
+   // res.send(data);
+});
+
 module.exports = router;

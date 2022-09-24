@@ -13,13 +13,12 @@ router.post("/new", (req, res) => {
    post.isProject = req.body.isProject;
    post.desc = req.body.desc;
    post.uploadDate = req.body.uploadDate;
-   if (req.body.isProject) {
-      post.category = req.body.category;
-      post.numOfPerson = req.body.numOfPerson;
-      post.period = req.body.period;
-      post.stack = req.body.stack;
-      post.date = req.body.date;
-   }
+   post.category = req.body.category;
+   post.numOfPerson = req.body.numOfPerson;
+   post.period = req.body.period;
+   post.stack = req.body.stack;
+   post.date = req.body.date;
+
    post.save((err) => {
       if (err) {
          console.error(err);
