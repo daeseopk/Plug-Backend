@@ -18,11 +18,17 @@ router.post("/new", (req, res) => {
    post.period = req.body.period;
    post.stack = req.body.stack;
    post.date = req.body.date;
+   post.likeList = [
+      "eotjqdl2220229142152",
+      "eotjqdl2220229142152",
+      "eotjqdl2220229142152",
+   ]; // 테스트용 default : null
+   post.commentList = [];
 
    post.save((err) => {
       if (err) {
          console.error(err);
-         res.json({ result: 0 });
+         res.json({ result: 0, errMsg: err });
          return;
       } else res.json({ result: 1 });
    });

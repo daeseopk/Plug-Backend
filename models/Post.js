@@ -9,6 +9,8 @@ const postSchema = new Schema({
    title: { type: String, required: true }, // 제목 (필수)
    desc: { type: String, required: true }, // 본문 (필수)
    uploadDate: { type: String, required: true }, // 게시 날짜 (필수)
+   likeList: { type: Array, required: false }, // 좋아요 남긴 사람
+   commentList: { type: Array, required: false }, // 댓글
    // only 프로젝트
    category: { type: String, required: false }, // 프로젝트 모집구분
    numOfPerson: { type: String, required: false }, // 프로젝트 모집인원

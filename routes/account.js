@@ -146,6 +146,8 @@ router.get("/getInfo/:uid", (req, res) => {
                title: post.title,
                desc: post.desc,
                uploadDate: post.uploadDate,
+               likeList: post.likeList,
+               commentList: post.commentList,
             });
             count += 1;
          }
