@@ -3,6 +3,9 @@ const router = express.Router();
 const User = require("../models/User");
 const Post = require("../models/Post");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
 // const authMiddleware = require("../modules/authMiddleware");
 
 require("dotenv").config();
@@ -163,9 +166,30 @@ router.get("/getInfo/:uid", (req, res) => {
       });
    });
 
-   /// 닉네임 찾기
+   var cpUpload = upload.fields([{ name: "image" }, { name: "uid" }]);
+   router.post("/changeProfile", cpUpload, (req, res, next) => {
+      const { image } = req.files;
+      var uid = JSON.parse(req.body.uid);
+      var filePath = image[0].path;
 
-   // res.send(data);
+      User.find((err, users) => {
+         if (err) return res.status(500).send({ error: "database failure" });
+         users.map(async (user) => {
+            console.log(user.uid === uid);
+            if (user.uid === uid) {
+               await User.updateOne(
+                  { uid: uid },
+                  { $set: { profile: filePath } }
+               );
+               res.json({ success: true });
+            }
+         });
+      });
+   });
 });
+
+// app.post("/img", upload.single("image"), function (req, res, next) {
+//    res.json({ urlPath: `http://localhost:8000/${req.file.path}` });
+// });
 
 module.exports = router;
