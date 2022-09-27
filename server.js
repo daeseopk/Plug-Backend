@@ -6,6 +6,7 @@ const cors = require("cors");
 const PORT = 8000;
 const accountRouter = require("./routes/account");
 const registerRouter = require("./routes/register");
+
 require("dotenv").config();
 
 mongoose
