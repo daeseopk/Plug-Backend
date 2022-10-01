@@ -20,7 +20,7 @@ router.post("/new", (req, res) => {
    user.password = req.body.password;
    user.career = req.body.career;
    user.techStack = req.body.techStack;
-   user.profile = null;
+   user.profile = req.body.profile ? req.body.profile : null;
    user.accessToken = null;
 
    user.save((err) => {
@@ -59,35 +59,65 @@ router.post("/isDuplicate", (req, res) => {
 router.post("/login", (req, res) => {
    User.find((err, users) => {
       if (err) return res.status(500).send({ error: "database failure" });
-      users.map((user) => {
-         if (user.id === req.body.id && user.password === req.body.password) {
-            jwt.sign(
-               { id: user.id, uid: user.uid },
-               process.env.SECRET_KEY,
-               { expiresIn: "1d" },
-               async (err, token) => {
-                  if (err) {
-                     console.log(err);
-                     res.status(401).json({
-                        success: false,
-                        errormessage: "token sign fail",
-                     });
-                  } else {
-                     res.json({ success: true, accessToken: token });
-                     await User.updateOne(
-                        { uid: user.uid },
-                        { $set: { accessToken: token } }
-                     );
+      for (var user of users) {
+         if (req.body.isSocial) {
+            if (req.body.id === user.id) {
+               jwt.sign(
+                  { id: user.id, uid: user.uid },
+                  process.env.SECRET_KEY,
+                  { expiresIn: "1d" },
+                  async (err, token) => {
+                     if (err) {
+                        console.log(err);
+                        return res.status(401).json({
+                           success: false,
+                           errormessage: "token sign fail",
+                        });
+                     } else {
+                        await User.updateOne(
+                           { uid: user.uid },
+                           { $set: { accessToken: token } }
+                        );
+                     }
+                     return res.json({ success: true, accessToken: token });
                   }
-               }
-            );
+               );
+               break;
+            }
          } else {
-            res.status(401).json({
-               success: false,
-               errormessage: "token sign fail",
-            });
+            if (
+               user.id === req.body.id &&
+               user.password === req.body.password
+            ) {
+               jwt.sign(
+                  { id: user.id, uid: user.uid },
+                  process.env.SECRET_KEY,
+                  { expiresIn: "1d" },
+                  async (err, token) => {
+                     if (err) {
+                        console.log(err);
+                        return res.status(401).json({
+                           success: false,
+                           errormessage: "token sign fail",
+                        });
+                     } else {
+                        await User.updateOne(
+                           { uid: user.uid },
+                           { $set: { accessToken: token } }
+                        );
+                     }
+                     return res.json({ success: true, accessToken: token });
+                  }
+               );
+               break;
+            } else {
+               return res.status(401).json({
+                  success: false,
+                  errormessage: "token sign fail",
+               });
+            }
          }
-      });
+      }
    });
 });
 
@@ -96,9 +126,9 @@ router.get("/currentUser/:token", (req, res) => {
    if (token !== null) {
       User.find((err, users) => {
          if (err) return res.status(500).send({ error: "database failure" });
-         users.map((user) => {
+         for (const user of users) {
             if (user.accessToken === token) {
-               res.send({
+               return res.send({
                   uid: user.uid,
                   techStack: user.techStack,
                   id: user.id,
@@ -107,12 +137,9 @@ router.get("/currentUser/:token", (req, res) => {
                   career: user.career,
                   profile: user.profile,
                });
-            } else {
-               res.status(401).json({
-                  success: false,
-               });
             }
-         });
+         }
+         res.json({ success: false, errorMsg: "doesn't exist same token" });
       });
    }
 });
