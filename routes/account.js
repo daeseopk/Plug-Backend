@@ -61,6 +61,7 @@ router.post("/login", (req, res) => {
       if (err) return res.status(500).send({ error: "database failure" });
       for (var user of users) {
          if (req.body.isSocial) {
+            // 소셜로그인
             if (req.body.id === user.id) {
                jwt.sign(
                   { id: user.id, uid: user.uid },
@@ -85,6 +86,7 @@ router.post("/login", (req, res) => {
                break;
             }
          } else {
+            // 아이디, 비밀번호 로그인
             if (
                user.id === req.body.id &&
                user.password === req.body.password
@@ -113,7 +115,7 @@ router.post("/login", (req, res) => {
             } else {
                return res.status(401).json({
                   success: false,
-                  errormessage: "token sign fail",
+                  errormessage: "wrong id and password",
                });
             }
          }
