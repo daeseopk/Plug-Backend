@@ -6,6 +6,7 @@ const cors = require("cors");
 const PORT = 8000;
 const accountRouter = require("./routes/account");
 const registerRouter = require("./routes/register");
+const chatRouter = require("./routes/chat");
 
 require("dotenv").config();
 
@@ -25,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("uploads"));
 app.use("/account", accountRouter);
 app.use("/register", registerRouter);
-
+app.use("/chat", chatRouter);
 const server = require("http").createServer(app);
 
 server.listen(PORT, () => {
