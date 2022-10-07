@@ -11,6 +11,7 @@ const upload = multer({ dest: "uploads/" });
 require("dotenv").config();
 
 router.post("/new", (req, res) => {
+   console.log(req.body);
    const user = new User();
 
    user.uid = req.body.uid;
@@ -87,6 +88,7 @@ router.post("/login", (req, res) => {
             }
          } else {
             // 아이디, 비밀번호 로그인
+
             if (
                user.id === req.body.id &&
                user.password === req.body.password
@@ -112,11 +114,6 @@ router.post("/login", (req, res) => {
                   }
                );
                break;
-            } else {
-               return res.status(401).json({
-                  success: false,
-                  errormessage: "wrong id and password",
-               });
             }
          }
       }
@@ -213,6 +210,29 @@ router.get("/getInfo/:uid", (req, res) => {
                res.json({ success: true });
             }
          });
+      });
+   });
+});
+
+router.get("/getUserInfo/:uid", (req, res) => {
+   var { uid } = req.params;
+   User.find((err, users) => {
+      if (err) return res.status(500).send({ error: "database failure" });
+      users.map((user) => {
+         if (user.uid === uid) {
+            res.json({
+               success: true,
+               userInfo: {
+                  uid: user.uid,
+                  id: user.id,
+                  email: user.email,
+                  nickname: user.nickname,
+                  career: user.career,
+                  techStack: user.techStack,
+                  profile: user.profile,
+               },
+            });
+         }
       });
    });
 });
