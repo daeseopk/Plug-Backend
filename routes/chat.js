@@ -13,7 +13,11 @@ router.get("/chatlist/:uid", (req, res) => {
       if (err) return res.status(500).send({ error: "database failure" });
       chats.map((chat) => {
          if (chat.users.includes(uid.uid)) {
-            chatList[num] = { chatList: chat.chat, users: chat.users };
+            chatList[num] = {
+               chatList: chat.chat,
+               users: chat.users,
+               chatId: chat.chatId,
+            };
             num += 1;
          }
       });
@@ -25,4 +29,5 @@ router.get("/chatlist/:uid", (req, res) => {
       }
    });
 });
+
 module.exports = router;
