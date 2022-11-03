@@ -31,6 +31,7 @@ mongoose
    .then(() => console.log("MongoDB connected"))
    .catch((error) => console.log(error));
 const socket = require("./modules/socket");
+
 socket(io);
 
 app.use(cors());
