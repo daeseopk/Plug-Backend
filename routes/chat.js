@@ -31,27 +31,29 @@ router.get("/chatlist/:uid", (req, res) => {
 });
 router.get("/getCurrentChat/:chatId/:currentUserUid", (req, res) => {
    var { chatId, currentUserUid } = req.params;
-   Chat.findOne({ chatId: chatId }, async (err, chat) => {
+   console.log("chatID : ", chatId, "currentUserUid : ", currentUserUid);
+   Chat.find(async (err, chats) => {
       if (err) return res.status(500).send({ error: "database failure" });
       var patnerUser;
+      chats.map(async (chat) => {
+         if (chat.chatId === chatId) {
+            await chat.users.map((user) => {
+               if (user !== currentUserUid) {
+                  patnerUser = user;
+               }
+            });
+            var data = {
+               chat: chat.chat,
+               currentUser: currentUserUid,
+               patnerUser: patnerUser,
+               chatId: chatId,
+            };
 
-      if (chat) {
-         await chat.users.map((user) => {
-            if (user !== currentUserUid) {
-               patnerUser = user;
+            if (data) {
+               res.json(data);
             }
-         });
-
-         var data = {
-            chat: chat.chat,
-            currentUser: currentUserUid,
-            patnerUser: patnerUser,
-            chatId: chatId,
-         };
-         if (data) {
-            res.json(data);
          }
-      }
+      });
    });
 });
 module.exports = router;
