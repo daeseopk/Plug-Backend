@@ -3,6 +3,7 @@ module.exports = function socket(io) {
 
    io.on("connection", (socket) => {
       socket.on("sendMsg", async (data) => {
+         console.log("hi");
          var { msg, chatId, patnerUser, currentUser } = data;
          var date = new Date();
          var time = `${date.getFullYear()}-${

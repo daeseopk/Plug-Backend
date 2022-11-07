@@ -29,5 +29,29 @@ router.get("/chatlist/:uid", (req, res) => {
       }
    });
 });
+router.get("/getCurrentChat/:chatId/:currentUserUid", (req, res) => {
+   var { chatId, currentUserUid } = req.params;
+   Chat.findOne({ chatId: chatId }, async (err, chat) => {
+      if (err) return res.status(500).send({ error: "database failure" });
+      var patnerUser;
 
+      if (chat) {
+         await chat.users.map((user) => {
+            if (user !== currentUserUid) {
+               patnerUser = user;
+            }
+         });
+
+         var data = {
+            chat: chat.chat,
+            currentUser: currentUserUid,
+            patnerUser: patnerUser,
+            chatId: chatId,
+         };
+         if (data) {
+            res.json(data);
+         }
+      }
+   });
+});
 module.exports = router;
