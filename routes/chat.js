@@ -31,13 +31,13 @@ router.get("/chatlist/:uid", (req, res) => {
 });
 router.get("/getCurrentChat/:chatId/:currentUserUid", (req, res) => {
    var { chatId, currentUserUid } = req.params;
-   console.log("chatID : ", chatId, "currentUserUid : ", currentUserUid);
+
    Chat.find(async (err, chats) => {
       if (err) return res.status(500).send({ error: "database failure" });
       var patnerUser;
-      chats.map(async (chat) => {
+      chats.map((chat) => {
          if (chat.chatId === chatId) {
-            await chat.users.map((user) => {
+            chat.users.map((user) => {
                if (user !== currentUserUid) {
                   patnerUser = user;
                }
@@ -49,8 +49,12 @@ router.get("/getCurrentChat/:chatId/:currentUserUid", (req, res) => {
                chatId: chatId,
             };
 
-            if (data) {
-               res.json(data);
+            try {
+               if (data) {
+                  res.send(data);
+               }
+            } catch (err) {
+               console.log(err);
             }
          }
       });

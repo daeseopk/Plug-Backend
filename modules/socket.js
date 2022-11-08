@@ -8,11 +8,14 @@ module.exports = function socket(io) {
          var time = `${date.getFullYear()}-${
             date.getMonth() + 1
          }-${date.getDate()}/${date.getHours()}:${date.getMinutes()}`;
+
+         console.log(time);
          var insertData = {
             uid: currentUser,
             desc: msg,
             date: time,
          };
+
          await Chat.findOneAndUpdate(
             { chatId: chatId },
             { $push: { chat: insertData } }
