@@ -89,31 +89,37 @@ router.post("/login", (req, res) => {
          } else {
             // 아이디, 비밀번호 로그인
 
-            if (
-               user.id === req.body.id &&
-               user.password === req.body.password
-            ) {
-               jwt.sign(
-                  { id: user.id, uid: user.uid },
-                  process.env.SECRET_KEY,
-                  { expiresIn: "1d" },
-                  async (err, token) => {
-                     if (err) {
-                        console.log(err);
-                        return res.status(401).json({
-                           success: false,
-                           errormessage: "token sign fail",
-                        });
-                     } else {
-                        await User.updateOne(
-                           { uid: user.uid },
-                           { $set: { accessToken: token } }
-                        );
+            if (user.id === req.body.id) {
+               if (user.password === req.body.password) {
+                  jwt.sign(
+                     { id: user.id, uid: user.uid },
+                     process.env.SECRET_KEY,
+                     { expiresIn: "1d" },
+                     async (err, token) => {
+                        if (err) {
+                           console.log(err);
+                           return res.status(401).json({
+                              success: false,
+                              errormessage: "token sign fail",
+                           });
+                        } else {
+                           await User.updateOne(
+                              { uid: user.uid },
+                              { $set: { accessToken: token } }
+                           );
+                        }
+
+                        return res.json({ success: true, accessToken: token });
                      }
-                     return res.json({ success: true, accessToken: token });
-                  }
-               );
-               break;
+                  );
+                  break;
+               } else {
+                  // 비밀번호 불일치
+                  return res.json({ success: false, reason: "passwordErr" });
+               }
+            } else {
+               // 아이디 존재 x
+               return res.json({ success: false, reason: "notExistId" });
             }
          }
       }
