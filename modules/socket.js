@@ -9,7 +9,6 @@ module.exports = function socket(io) {
             date.getMonth() + 1
          }-${date.getDate()}/${date.getHours()}:${date.getMinutes()}`;
 
-         console.log(time);
          var insertData = {
             uid: currentUser,
             desc: msg,
