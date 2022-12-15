@@ -18,6 +18,7 @@ const io = socketIo(server, {
 const accountRouter = require("./routes/account");
 const registerRouter = require("./routes/register");
 const chatRouter = require("./routes/chat");
+const stackRouter = require("./routes/stacks");
 
 require("dotenv").config();
 
@@ -38,9 +39,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("uploads"));
+app.use("/Stacks", express.static("Stacks"));
 app.use("/account", accountRouter);
 app.use("/register", registerRouter);
 app.use("/chat", chatRouter);
+app.use("/stacks", stackRouter);
 
 server.listen(PORT, () => {
    console.log(`server is ruinnig on ${PORT}`);
