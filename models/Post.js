@@ -17,6 +17,7 @@ const postSchema = new Schema({
    period: { type: String, required: false }, // 프로젝트 진행 기간
    stack: { type: Array, required: false }, // 프로젝트 기술 스택
    date: { type: String, required: false }, // 프로젝트 시작 예정일
+   recruiting: { type: Boolean, required: false }, // 모집중 여부
 });
 
 module.exports = mongoose.model("Post", postSchema);

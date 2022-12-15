@@ -13,7 +13,6 @@ require("dotenv").config();
 router.post("/new", (req, res) => {
    console.log(req.body);
    const user = new User();
-
    user.uid = req.body.uid;
    user.id = req.body.id;
    user.email = req.body.email;

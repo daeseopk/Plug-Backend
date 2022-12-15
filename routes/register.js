@@ -20,6 +20,7 @@ router.post("/new", (req, res) => {
    post.date = req.body.date;
    post.likeList = [];
    post.commentList = [];
+   post.recruiting = true;
 
    post.save((err) => {
       if (err) {
