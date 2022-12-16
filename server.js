@@ -19,6 +19,7 @@ const accountRouter = require("./routes/account");
 const registerRouter = require("./routes/register");
 const chatRouter = require("./routes/chat");
 const stackRouter = require("./routes/stacks");
+const postRouter = require("./routes/post");
 
 require("dotenv").config();
 
@@ -44,6 +45,7 @@ app.use("/account", accountRouter);
 app.use("/register", registerRouter);
 app.use("/chat", chatRouter);
 app.use("/stacks", stackRouter);
+app.use("/post", postRouter);
 
 server.listen(PORT, () => {
    console.log(`server is ruinnig on ${PORT}`);
