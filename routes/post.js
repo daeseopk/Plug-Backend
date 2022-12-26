@@ -7,10 +7,32 @@ require("dotenv").config();
 router.get("/getAllPost", (req, res) => {
    Post.find((err, posts) => {
       if (err) return res.status(500).send({ error: "database failure" });
+      var posts_ = posts.sort((a, b) => {
+         return b.likeList.length - a.likeList.length; // 좋아요 개수 순으로 정렬
+      });
       res.json({
          success: true,
-         postList: posts,
+         postList: posts_,
       });
+   });
+});
+router.get("/getFilteredPostOnlyStack", (req, res) => {
+   var { stack } = req.query;
+   var post_tmp = [];
+   Post.find((err, posts) => {
+      if (err) return res.status(500).send({ error: "database failure" });
+      if (stack !== undefined) {
+         posts.map((post) => {
+            var isExist = false;
+            stack.map((stack_) => {
+               if (post.stack.includes(stack_)) isExist = true;
+            });
+            if (isExist) {
+               post_tmp.push(post);
+            }
+         });
+      }
+      res.send({ success: true, postList: post_tmp });
    });
 });
 router.get("/getFilteredPost", (req, res) => {
