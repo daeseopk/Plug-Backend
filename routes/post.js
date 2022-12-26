@@ -32,7 +32,10 @@ router.get("/getFilteredPostOnlyStack", (req, res) => {
             }
          });
       }
-      res.send({ success: true, postList: post_tmp });
+      var posts_ = post_tmp.sort((a, b) => {
+         return b.likeList.length - a.likeList.length; // 좋아요 개수 순으로 정렬
+      });
+      res.send({ success: true, postList: posts_ });
    });
 });
 router.get("/getFilteredPost", (req, res) => {
