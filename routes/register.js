@@ -18,6 +18,7 @@ router.post("/new", (req, res) => {
    post.period = req.body.period;
    post.stack = req.body.stack;
    post.date = req.body.date;
+   post.career = req.body.career;
    post.likeList = [];
    post.commentList = [];
    post.recruiting = true;

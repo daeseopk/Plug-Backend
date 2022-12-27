@@ -18,6 +18,7 @@ const postSchema = new Schema({
    stack: { type: Array, required: false }, // 프로젝트 기술 스택
    date: { type: String, required: false }, // 프로젝트 시작 예정일
    recruiting: { type: Boolean, required: false }, // 모집중 여부
+   career: { type: Number, required: false }, // 주니어, 아마추어, 시니어
 });
 
 module.exports = mongoose.model("Post", postSchema);

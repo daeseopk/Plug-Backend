@@ -22,8 +22,10 @@ router.get("/getAllPost", (req, res) => {
       });
    });
 });
-router.get("/getFilteredPostOnlyStack", (req, res) => {
-   var { stack } = req.query;
+
+router.get("/getFilteredPostStackAndCareer", (req, res) => {
+   var { stack, career } = req.query;
+
    var post_tmp = [];
    Post.find((err, posts) => {
       if (err) return res.status(500).send({ error: "database failure" });
@@ -31,7 +33,11 @@ router.get("/getFilteredPostOnlyStack", (req, res) => {
          posts.map((post) => {
             var isExist = false;
             stack.map((stack_) => {
-               if (post.stack.includes(stack_)) isExist = true;
+               if (
+                  post.stack.includes(stack_) &&
+                  post.career === parseInt(career)
+               )
+                  isExist = true;
             });
             if (isExist && post.isProject) {
                post_tmp.push(post);
@@ -44,6 +50,7 @@ router.get("/getFilteredPostOnlyStack", (req, res) => {
       res.send({ success: true, postList: posts_ });
    });
 });
+
 router.get("/getFilteredPost", (req, res) => {
    var { category, numOfPerson, date, period, stack } = req.query;
    date = `${date.split("-")[0].trim()}-${date.split("-")[1].trim()}-${date
