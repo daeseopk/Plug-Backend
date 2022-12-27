@@ -59,7 +59,8 @@ router.post("/isDuplicate", (req, res) => {
 router.post("/login", (req, res) => {
    User.find((err, users) => {
       if (err) return res.status(500).send({ error: "database failure" });
-      for (var user of users) {
+
+      users.map((user, index) => {
          if (req.body.isSocial) {
             // 소셜로그인
             if (req.body.id === user.id) {
@@ -83,11 +84,9 @@ router.post("/login", (req, res) => {
                      return res.json({ success: true, accessToken: token });
                   }
                );
-               break;
             }
          } else {
             // 아이디, 비밀번호 로그인
-
             if (user.id === req.body.id) {
                if (user.password === req.body.password) {
                   jwt.sign(
@@ -107,21 +106,19 @@ router.post("/login", (req, res) => {
                               { $set: { accessToken: token } }
                            );
                         }
-
                         return res.json({ success: true, accessToken: token });
                      }
                   );
-                  break;
                } else {
                   // 비밀번호 불일치
                   return res.json({ success: false, reason: "passwordErr" });
                }
-            } else {
-               // 아이디 존재 x
+            } else if (users.length === index) {
+               // 마지막까지 mapping 시 아이디 존재 x
                return res.json({ success: false, reason: "notExistId" });
             }
          }
-      }
+      });
    });
 });
 
