@@ -141,4 +141,27 @@ router.get("/getFilteredPost", (req, res) => {
    });
 });
 
+router.post("/likeButton", (req, res) => {
+   const { uid, postId } = req.body;
+
+   Post.find((err, posts) => {
+      if (err) return res.status(500).send({ error: "database failure" });
+      posts.map(async (post) => {
+         if (post.postId === postId) {
+            var likeList_ = [...post.likeList];
+            if (likeList_.includes(uid)) {
+               likeList_ = likeList_.filter((element) => element !== uid);
+            } else {
+               likeList_.push(uid);
+            }
+            await Post.updateOne(
+               { postId: postId },
+               { $set: { likeList: likeList_ } }
+            );
+            res.json({ success: true });
+         }
+      });
+   });
+});
+
 module.exports = router;
