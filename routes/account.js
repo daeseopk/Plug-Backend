@@ -11,7 +11,6 @@ const upload = multer({ dest: "uploads/" });
 require("dotenv").config();
 
 router.post("/new", (req, res) => {
-   console.log(req.body);
    const user = new User();
    user.uid = req.body.uid;
    user.id = req.body.id;
@@ -23,15 +22,14 @@ router.post("/new", (req, res) => {
    user.profile = req.body.profile ? req.body.profile : null;
    user.accessToken = null;
 
-   user.save((err) => {
-      if (err) {
-         console.error(err);
-         res.json({ result: 0 });
-         return;
-      } else res.json({ result: 1 });
-   });
+   try {
+      user.save();
+   } catch (err) {
+      console.log(err);
+      return res.json({ success: false, errMsg: err });
+   }
+   return res.json({ success: true });
 });
-
 //중복 확인
 router.post("/isDuplicate", (req, res) => {
    var tmp = [];
@@ -127,20 +125,28 @@ router.get("/currentUser/:token", (req, res) => {
    if (token !== null) {
       User.find((err, users) => {
          if (err) return res.status(500).send({ error: "database failure" });
-         for (const user of users) {
+         users.map((user, index) => {
             if (user.accessToken === token) {
-               return res.send({
-                  uid: user.uid,
-                  techStack: user.techStack,
-                  id: user.id,
-                  email: user.email,
-                  nickname: user.nickname,
-                  career: user.career,
-                  profile: user.profile,
+               return res.json({
+                  success: true,
+                  currentUser: {
+                     uid: user.uid,
+                     techStack: user.techStack,
+                     id: user.id,
+                     email: user.email,
+                     nickname: user.nickname,
+                     career: user.career,
+                     profile: user.profile,
+                  },
                });
             }
-         }
-         res.json({ success: false, errorMsg: "doesn't exist same token" });
+            if (user.length === index) {
+               return res.json({
+                  success: false,
+                  errorMsg: "doesn't exist same token",
+               });
+            }
+         });
       });
    }
 });

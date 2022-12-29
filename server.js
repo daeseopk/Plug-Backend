@@ -10,7 +10,7 @@ const PORT = 8080;
 
 const io = socketIo(server, {
    cors: {
-      origin: "http://localhost:3000",
+      origin: process.env.FRONTSERVER,
       methods: ["GET", "POST"],
    },
 });
@@ -36,7 +36,12 @@ const socket = require("./modules/socket");
 
 socket(io);
 
-app.use(cors());
+app.use(
+   cors({
+      origin: process.env.FRONTSERVER,
+      credentials: true,
+   })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("uploads"));
