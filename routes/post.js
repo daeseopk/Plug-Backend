@@ -24,8 +24,7 @@ router.get("/getAllPost", (req, res) => {
 });
 
 router.get("/getFilteredPostStackAndCareer", (req, res) => {
-   var { stack, career } = req.query;
-
+   var { stack, career, uid } = req.query;
    var post_tmp = [];
    Post.find((err, posts) => {
       if (err) return res.status(500).send({ error: "database failure" });
@@ -44,7 +43,8 @@ router.get("/getFilteredPostStackAndCareer", (req, res) => {
             }
          });
       }
-      var posts_ = post_tmp.sort((a, b) => {
+      var posts_ = post_tmp.filter((element) => element.uid !== uid); // 본인이 작성할 글 필터링
+      posts_ = posts_.sort((a, b) => {
          return b.likeList.length - a.likeList.length; // 좋아요 개수 순으로 정렬
       });
       res.send({ success: true, postList: posts_ });
@@ -52,7 +52,7 @@ router.get("/getFilteredPostStackAndCareer", (req, res) => {
 });
 
 router.get("/getFilteredPost", (req, res) => {
-   var { category, numOfPerson, date, period, stack } = req.query;
+   var { category, numOfPerson, date, period, stack, uid } = req.query;
    date = `${date.split("-")[0].trim()}-${date.split("-")[1].trim()}-${date
       .split("-")[2]
       .trim()}`;
@@ -133,10 +133,11 @@ router.get("/getFilteredPost", (req, res) => {
             return post_tmp;
          }
       };
+
       post_tmp = Filter_1(category, numOfPerson, period); // 1차 필터 category, numOfPerson, period
       post_tmp = Filter_2(stack); // 2차 필터 stack
       post_tmp = Filter_3(today, date); // 3차 필터 date(시작 날짜)
-
+      post_tmp = post_tmp.filter((element) => element.uid !== uid);
       res.json({ success: true, postList: post_tmp });
    });
 });

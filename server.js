@@ -6,14 +6,9 @@ const server = http.createServer(app);
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const PORT = 8080;
+const PORT = 8000;
 
-const io = socketIo(server, {
-   cors: {
-      origin: process.env.FRONTSERVER,
-      methods: ["GET", "POST"],
-   },
-});
+require("dotenv").config();
 
 const accountRouter = require("./routes/account");
 const registerRouter = require("./routes/register");
@@ -21,8 +16,12 @@ const chatRouter = require("./routes/chat");
 const stackRouter = require("./routes/stacks");
 const postRouter = require("./routes/post");
 
-require("dotenv").config();
-
+const io = socketIo(server, {
+   cors: {
+      origin: process.env.FRONTSERVER,
+      methods: ["GET", "POST"],
+   },
+});
 mongoose
    .connect(process.env.MONGODB_KEY, {
       // useNewUrlPaser: true,
@@ -36,12 +35,7 @@ const socket = require("./modules/socket");
 
 socket(io);
 
-app.use(
-   cors({
-      origin: process.env.FRONTSERVER,
-      credentials: true,
-   })
-);
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/uploads", express.static("uploads"));

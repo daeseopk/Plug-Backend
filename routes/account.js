@@ -224,6 +224,7 @@ router.get("/getInfo/:uid", (req, res) => {
 
 router.get("/getUserInfo/:uid", (req, res) => {
    var { uid } = req.params;
+
    User.find((err, users) => {
       if (err) return res.status(500).send({ error: "database failure" });
       users.map((user) => {
@@ -245,6 +246,30 @@ router.get("/getUserInfo/:uid", (req, res) => {
    });
 });
 
+router.get("/getChatRoomUserInfo", (req, res) => {
+   var { currentUser, partnerUser } = req.query;
+   var result = {};
+   User.find((err, users) => {
+      currentUser_info = {};
+      partnerUser_info = {};
+      users.map((user) => {
+         if (user.uid === partnerUser) {
+            partnerUser_info.nickname = user.nickname;
+            partnerUser_info.uid = user.uid;
+            partnerUser_info.profile = user.profile;
+         } else if (user.uid === currentUser) {
+            currentUser_info.nickname = user.nickname;
+            currentUser_info.uid = user.uid;
+            currentUser_info.profile = user.profile;
+         }
+      });
+      result.currentUser = currentUser_info;
+      result.partnerUser = partnerUser_info;
+      // console.log(result);
+      // result.push(currentUser_info, partnerUser_info);
+      return res.json({ success: true, result: result });
+   });
+});
 // app.post("/img", upload.single("image"), function (req, res, next) {
 //    res.json({ urlPath: `http://localhost:8000/${req.file.path}` });
 // });
