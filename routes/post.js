@@ -62,7 +62,6 @@ router.get("/getFilteredPost", (req, res) => {
    var { category, numOfPerson, date, period, stack, uid, isRecruiting } =
       req.query;
    isRecruiting = JSON.parse(isRecruiting);
-   console.log(isRecruiting);
    date = `${date.split("-")[0].trim()}-${date.split("-")[1].trim()}-${date
       .split("-")[2]
       .trim()}`;
