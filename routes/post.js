@@ -5,12 +5,19 @@ const Post = require("../models/Post");
 require("dotenv").config();
 
 router.get("/getAllPost", (req, res) => {
+   var { isRecruiting } = req.query;
+   isRecruiting = JSON.parse(isRecruiting);
+
    Post.find((err, posts) => {
       var result = [];
+      var posts_ = [];
       if (err) return res.status(500).send({ error: "database failure" });
-      var posts_ = posts.sort((a, b) => {
+      posts_ = posts.sort((a, b) => {
          return b.likeList.length - a.likeList.length; // 좋아요 개수 순으로 정렬
       });
+      if (isRecruiting) {
+         posts_ = posts_.filter((post) => post.recruiting === true);
+      }
       posts_.map((post) => {
          if (post.isProject === true) {
             result.push(post);
@@ -33,8 +40,8 @@ router.get("/getFilteredPostStackAndCareer", (req, res) => {
             var isExist = false;
             stack.map((stack_) => {
                if (
-                  post.stack.includes(stack_) &&
-                  post.career === parseInt(career)
+                  (post.stack.includes(stack_) && post.recruiting) ||
+                  (post.career === parseInt(career) && post.recruiting)
                )
                   isExist = true;
             });
@@ -52,7 +59,10 @@ router.get("/getFilteredPostStackAndCareer", (req, res) => {
 });
 
 router.get("/getFilteredPost", (req, res) => {
-   var { category, numOfPerson, date, period, stack, uid } = req.query;
+   var { category, numOfPerson, date, period, stack, uid, isRecruiting } =
+      req.query;
+   isRecruiting = JSON.parse(isRecruiting);
+   console.log(isRecruiting);
    date = `${date.split("-")[0].trim()}-${date.split("-")[1].trim()}-${date
       .split("-")[2]
       .trim()}`;
@@ -82,11 +92,13 @@ router.get("/getFilteredPost", (req, res) => {
 
    Post.find((err, posts) => {
       if (err) return res.status(500).send({ error: "database failure" });
-      // category, numOfPerson, period로 1차 필터링
+      // category, numOfPerson, period, recruiting으로 1차 필터링
       // numOfPerson, period 항목 각각 0(상관 없음 혹은 인원, 기간 미정)인 경우 필터링 x
       const Filter_1 = (category, numOfPerson, period) => {
          post_tmp = posts.filter((post) => post.category === category);
-
+         if (isRecruiting) {
+            post_tmp = post_tmp.filter((post) => post.recruiting === true);
+         }
          if (parseInt(numOfPerson) >= 1) {
             post_tmp = post_tmp.filter(
                (post) => post.numOfPerson === numOfPerson
@@ -134,7 +146,7 @@ router.get("/getFilteredPost", (req, res) => {
          }
       };
 
-      post_tmp = Filter_1(category, numOfPerson, period); // 1차 필터 category, numOfPerson, period
+      post_tmp = Filter_1(category, numOfPerson, period); // 1차 필터 category, numOfPerson, period, recruiting
       post_tmp = Filter_2(stack); // 2차 필터 stack
       post_tmp = Filter_3(today, date); // 3차 필터 date(시작 날짜)
       post_tmp = post_tmp.filter((element) => element.uid !== uid);
