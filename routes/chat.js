@@ -60,4 +60,44 @@ router.get("/getCurrentChat/:chatId/:currentUserUid", (req, res) => {
       });
    });
 });
+router.post("/newChat", (req, res) => {
+   var { currentUser, writerUser, desc } = req.body;
+   var chatIdList = [];
+   Chat.find((err, chats) => {
+      if (err) return res.status(500).send({ error: "database failure" });
+
+      chats.map((chat) => {
+         chatIdList.push(chat.chatId);
+      });
+      if (
+         chatIdList.includes(`${currentUser}${writerUser}`) ||
+         chatIdList.includes(`${writerUser}${currentUser}`)
+      ) {
+         return res.json({ success: true, reason: "AlreadyExistChat" });
+      } else {
+         var date = new Date();
+         const chat = new Chat();
+
+         var chatId = `${date.getFullYear()}${
+            date.getMonth() + 1
+         }${date.getDay()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
+         var date = `${date.getFullYear()}-${
+            date.getMonth() + 1
+         }-${date.getDay()}/${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+
+         chat.chatId = chatId;
+         chat.users = [currentUser, writerUser];
+         chat.chat = [{ uid: currentUser, desc: desc, date: date }];
+
+         try {
+            chat.save();
+         } catch (err) {
+            console.log(err);
+            return res.json({ success: false, reason: err });
+         }
+         return res.json({ success: true, reason: "SuccessSendMsg" });
+      }
+   });
+});
 module.exports = router;

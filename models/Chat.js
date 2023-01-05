@@ -6,6 +6,7 @@ const chatSchema = new Schema({
    users: { type: Array, required: true }, // uid array
    chat: { type: Array, required: false },
 });
+
 // chat=[
 //     {
 //          uid:uid,
