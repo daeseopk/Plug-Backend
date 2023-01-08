@@ -176,4 +176,15 @@ router.post("/likeButton", (req, res) => {
    });
 });
 
+router.get("/getPost", (req, res) => {
+   const { postId } = req.query;
+   Post.find((err, posts) => {
+      if (err) return res.status(500).send({ error: "database failure" });
+      posts.map((post) => {
+         if (post.postId === postId) {
+            return res.json({ success: true, post: post });
+         }
+      });
+   });
+});
 module.exports = router;

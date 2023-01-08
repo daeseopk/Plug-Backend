@@ -21,4 +21,11 @@ const postSchema = new Schema({
    career: { type: Number, required: false }, // 주니어, 아마추어, 시니어
 });
 
+// CommentList=[
+//    {uid:"uid",
+//    date:"date",
+//    desc:"desc",
+//    }
+// ]
+
 module.exports = mongoose.model("Post", postSchema);
